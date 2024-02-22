@@ -1,128 +1,123 @@
-import './App.css';
-import './reset.css';
+import BreweryList from "./Components/BreweryList";
+import BreweryTypeForm from "./Components/BreweryTypeForm";
+import CityFilter from "./Components/CityFilter";
+import Search from "./Components/Search";
+import SearchCity from "./Components/SearchCity";
+
+import {
+	getBreweries,
+	getBreweriesByState,
+	getBreweriesByType,
+	getBreweriesByTypeAndState,
+	getBreweriesByTypeByStateAndByCities,
+	getBreweriesByCity, // Added this line
+} from "./Helpers/BreweryAPI";
+import { useEffect, useState } from "react";
+
 function App() {
+	const [breweries, setBreweries] = useState([]);
+	const [page, setPage] = useState(1);
 
-  return (
-    <>
-      <header className="main-header">
-        <section className="select-state-section">
-          <h2>Welcome to Brewery Tours</h2>
-          <input id="select-state" name="select-state" type="text" placeholder="Search Breweries" />
-          <button id="visit" style={{ backgroundColor: 'red' }}>Visit-list</button>
-        </section>
-      </header>
-      <main>
-        <aside className="filters-section">
-          <h2 className="filters-section-heading">Filter By:</h2>
-          <form id="filter-by-type-form" autoComplete="off">
-            <label htmlFor="filter-by-type"><h3>Type of Brewery</h3></label>
-            <select name="filter-by-type" id="filter-by-type">
-              <option value="">Select a type...</option>
-              <option value="micro">Micro</option>
-              <option value="regional">Regional</option>
-              <option value="brewpub">Brewpub</option>
-            </select>
-          </form>
-          <div className="filter-by-city-heading">
-            <h3>Cities</h3>
-            <button className="clear-all-btn">clear all</button>
-          </div>
-          <form id="filter-by-city-form">
-            <input type="checkbox" name="chardon" value="chardon" />
-            <label htmlFor="chardon">Chardon</label>
+	const [state, setState] = useState("");
+	const [type, setType] = useState("");
+	const [cities, setCities] = useState([]);
 
-            <input type="checkbox" name="mason" value="mason" />
-            <label htmlFor="mason">Mason</label>
+	const [searchBrewery, setSearchBrewery] = useState("");
 
-            <input type="checkbox" name="whitehall" value="whitehall" />
-            <label htmlFor="whitehall">Whitehall</label>
+	const [currentPage, setCurrentPage] = useState(1);
 
-            <input type="checkbox" name="defiance" value="defiance" />
-            <label htmlFor="defiance">Defiance</label>
+	const hasFilter = state || type || cities.length > 0;
+	const hasSearched = state && type && cities.length > 0;
 
-            <input type="checkbox" name="columbus" value="columbus" />
-            <label htmlFor="columbus">Columbus</label>
+	useEffect(() => {
+		fetchBreweries();
+	}, [page, hasFilter, hasSearched, state, type, cities, searchBrewery]);
 
-            <input type="checkbox" name="akron" value="akron" />
-            <label htmlFor="akron">Akron</label>
+	async function fetchBreweries() {
+		try {
+			console.log(cities);
+			let fetchedBreweries;
+			if (!hasFilter) {
+				fetchedBreweries = await getBreweries(page);
+			} else if (state && !type) {
+				fetchedBreweries = await getBreweriesByState(state, page);
+			} else if (!state && type) {
+				fetchedBreweries = await getBreweriesByType(type, page);
+			} else if (state && type && cities.length > 0) {
+				fetchedBreweries = await getBreweriesByTypeByStateAndByCities(
+					type,
+					state,
+					cities,
+					page
+				);
+			} else if (state == "" && type == "" && cities.length > 0) {
+				fetchedBreweries = await getBreweriesByCity(cities, page);
+			} else {
+				fetchedBreweries = await getBreweriesByTypeAndState(type, state, page);
+			}
+			setBreweries(
+				fetchedBreweries.filter((brewery) =>
+					searchBrewery.length >= 3
+						? brewery.name.includes(searchBrewery)
+						: true
+				)
+			);
+		} catch (error) {
+			console.error("Error fetching breweries:", error);
+		}
+	}
 
-            <input type="checkbox" name="cleveland" value="cleveland" />
-            <label htmlFor="cleveland">Cleveland</label>
+	const goToNextPage = () => {
+		if (hasFilter) {
+			setCurrentPage((prevPage) => prevPage + 1);
+		} else {
+			setPage((prevPage) => prevPage + 1);
+		}
+	};
 
-            <input type="checkbox" name="mount-orab" value="mount-orab" />
-            <label htmlFor="mount-orab">Mount Orab</label>
+	const goToPreviousPage = () => {
+		if (hasFilter) {
+			setCurrentPage((prevPage) => prevPage - 1);
+		} else {
+			setPage((prevPage) => prevPage - 1);
+		}
+	};
 
-            <input type="checkbox" name="lorain" value="lorain" />
-            <label htmlFor="lorain">Lorain</label>
+	const startIndex = (currentPage - 1) * 10;
+	const endIndex = startIndex + 10;
+	const paginatedBreweries = breweries.slice(startIndex, endIndex);
 
-            <input type="checkbox" name="austintown" value="austintown" />
-            <label htmlFor="austintown">Austintown</label>
-
-            <input type="checkbox" name="columbiana" value="columbiana" />
-            <label htmlFor="columbiana">Columbiana</label>
-
-            <input type="checkbox" name="toledo" value="toledo" />
-            <label htmlFor="toledo">Toledo</label>
-
-            <input type="checkbox" name="holland" value="holland" />
-            <label htmlFor="holland">Holland</label>
-
-            <input type="checkbox" name="lakewood" value="lakewood" />
-            <label htmlFor="lakewood">Lakewood</label>
-
-            <input type="checkbox" name="bowling-green" value="bowling-green" />
-            <label htmlFor="bowling-green">Bowling Green</label>
-
-            <input type="checkbox" name="dayton" value="dayton" />
-            <label htmlFor="dayton">Dayton</label>
-
-            <input type="checkbox" name="wilmington" value="wilmington" />
-            <label htmlFor="wilmington">Wilmington</label>
-
-            <input type="checkbox" name="cleveland-heights" value="cleveland-heights" />
-            <label htmlFor="cleveland-heights">Cleveland Heights</label>
-
-            <input type="checkbox" name="strongsville" value="strongsville" />
-            <label htmlFor="strongsville">Strongsville</label>
-
-            <input type="checkbox" name="canal-winchester" value="canal-winchester" />
-            <label htmlFor="canal-winchester">Canal Winchester</label>
-
-            <input type="checkbox" name="logan" value="logan" />
-            <label htmlFor="logan">Logan</label>
-
-            <input type="checkbox" name="willoughby" value="willoughby" />
-            <label htmlFor="willoughby">Willoughby</label>
-
-            <input type="checkbox" name="buckeye-lake" value="buckeye-lake" />
-            <label htmlFor="buckeye-lake">Buckeye Lake</label>
-
-            <input type="checkbox" name="newark" value="newark" />
-            <label htmlFor="newark">Newark</label>
-
-            <input type="checkbox" name="canton" value="canton" />
-            <label htmlFor="canton">Canton</label>
-
-            <input type="checkbox" name="port-clinton" value="port-clinton" />
-            <label htmlFor="port-clinton">Port Clinton</label>
-
-            <input type="checkbox" name="mentor" value="mentor" />
-            <label htmlFor="mentor">Mentor</label>
-
-            <input type="checkbox" name="warren" value="warren" />
-            <label htmlFor="warren">Warren</label>
-          </form>
-        </aside>
-        <h1>List of Breweries</h1>
-        <article>
-          <ul id="breweries-list" className="breweries-list">
-          </ul>
-          <button id="prev-page">Previous</button>
-          <button id="next-page">Next</button>
-        </article>
-      </main>
-    </>
-  );
+	return (
+		<div>
+			<header className="main-header">
+				<section className="select-state-section">
+					<h2>Welcome to Brewery Tours</h2>
+					<Search state={state} setState={setState} />
+				</section>
+			</header>
+			<main>
+				<aside className="filters-section">
+					<h2 className="filters-section-heading">Filter By:</h2>
+					<BreweryTypeForm setType={setType} />
+					<CityFilter setCities={setCities} />
+				</aside>
+				<h1>List of Breweries</h1>
+				<SearchCity
+					searchBrewery={searchBrewery}
+					setSearchBrewery={setSearchBrewery}
+				/>
+				<BreweryList breweries={paginatedBreweries} />
+				<div>
+					<button id="prev-page" onClick={goToPreviousPage}>
+						Previous
+					</button>
+					<button id="next-page" onClick={goToNextPage}>
+						Next
+					</button>
+				</div>
+			</main>
+		</div>
+	);
 }
 
 export default App;
