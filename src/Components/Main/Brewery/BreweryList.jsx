@@ -1,7 +1,10 @@
-import PropTypes from "prop-types";
 import Brewery from "./Brewery";
+import { useSelector } from "react-redux";
 
-export default function BreweryList({ breweries }) {
+import { selectBreweries } from "../../../State/brewery/brewerySlice";
+export default function BreweryList() {
+	const breweries = useSelector(selectBreweries);
+
 	return (
 		<article>
 			<ul id="breweries-list" className="breweries-list">
@@ -12,7 +15,3 @@ export default function BreweryList({ breweries }) {
 		</article>
 	);
 }
-
-BreweryList.propTypes = {
-	breweries: PropTypes.array.isRequired,
-};

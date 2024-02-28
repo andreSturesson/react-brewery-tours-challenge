@@ -241,3 +241,13 @@ article {
 	text-decoration: none;
 	font-weight: bold;
 }
+
+.center {
+	text-align: center;
+	margin: 5px;
+}
+
+.button-margin {
+	width: 200px;
+	margin: 10px;
+}

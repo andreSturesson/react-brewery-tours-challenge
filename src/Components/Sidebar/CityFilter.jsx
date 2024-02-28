@@ -1,17 +1,27 @@
-import PropType from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
+import {
+	selectFilterParams,
+	setFilterParams,
+} from "../../State/brewery/brewerySlice";
+import { getCityParams } from "../../Helpers/FilterHelper";
+export default function CityFilter() {
+	const dispatch = useDispatch();
+	const filterParams = useSelector(selectFilterParams);
 
-export default function CityFilter({ setCities }) {
 	const handleCityChange = (event) => {
 		const { value, checked } = event.target;
 		if (checked) {
-			setCities((prevCities) => [...prevCities, value]);
+			dispatch(setFilterParams({ ...filterParams, ...getCityParams(value) }));
 		} else {
-			setCities((prevCities) => prevCities.filter((city) => city !== value));
+			dispatch(setFilterParams({ ...filterParams, ...getCityParams("") }));
 		}
 	};
 
 	const handleClearAll = () => {
-		setCities([]);
+		if (filterParams.by_city === "") {
+			return;
+		}
+		dispatch(setFilterParams({ ...filterParams, ...getCityParams("") }));
 	};
 
 	return (
@@ -250,7 +260,3 @@ export default function CityFilter({ setCities }) {
 		</>
 	);
 }
-
-CityFilter.propTypes = {
-	setCities: PropType.func.isRequired,
-};
