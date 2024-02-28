@@ -10,6 +10,7 @@ export default function App() {
 	const dispatch = useDispatch();
 	const filterParams = useSelector(selectFilterParams);
 
+	//Should maybe be in a useEffect in Main.jsx
 	useEffect(() => {
 		getBreweries(buildUrl(filterParams)).then((data) => {
 			dispatch(setBreweries(data));

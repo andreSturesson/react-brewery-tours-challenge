@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+//Unsure if this is the correct way to handle state using react redux. Tried to follow the documentation...
 const initialState = {
 	breweries: [],
 	filterParams: [],

@@ -1,5 +1,7 @@
 const API_URL = "https://api.openbrewerydb.org/v1/breweries";
 
+//Redesigned the fetching from the API. This is a much cleaner and more efficient way to fetch data from the API.
+//This is also a maintainable solution.
 export function buildUrl(params) {
 	let url = API_URL;
 	const queryParams = [];

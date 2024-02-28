@@ -12,6 +12,8 @@ export default function SearchByName() {
 	const filterParams = useSelector(selectFilterParams);
 	const [Search, setSearch] = useState("");
 
+	//Still not a good way of handling this, since the state updates on every keystroke
+	//Would love a workshop on debouncing and throttling
 	const handleSearchChange = (event) => {
 		const searchValue = event.target.value;
 		setSearch(searchValue);
