@@ -7,20 +7,20 @@ import { buildUrl } from "./Helpers/FilterHelper";
 import Main from "./Components/Main/Main";
 
 export default function App() {
-	const dispatch = useDispatch();
-	const filterParams = useSelector(selectFilterParams);
+  const dispatch = useDispatch();
+  const filterParams = useSelector(selectFilterParams);
 
-	//Should maybe be in a useEffect in Main.jsx
-	useEffect(() => {
-		getBreweries(buildUrl(filterParams)).then((data) => {
-			dispatch(setBreweries(data));
-		});
-	}, [dispatch, filterParams]);
+  //Should maybe be in a useEffect in Main.jsx
+  useEffect(() => {
+    getBreweries(buildUrl(filterParams)).then((data) => {
+      dispatch(setBreweries(data));
+    });
+  }, [dispatch, filterParams]);
 
-	return (
-		<>
-			<Header />
-			<Main />
-		</>
-	);
+  return (
+    <>
+      <Header />
+      <Main />
+    </>
+  );
 }
